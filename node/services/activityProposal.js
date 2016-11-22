@@ -2,8 +2,10 @@
 'use strict';
 
 const uuid = require('node-uuid');
+const fetch = require('node-fetch');
 const callSendAPI = require('./sendMessage');
 const proposalStore = require('./proposalStore');
+const categories = require('../data/categories.json');
 
 const proposeEvents = (recipientId, city) => {
     const textMessage = {
@@ -11,79 +13,91 @@ const proposeEvents = (recipientId, city) => {
             id: recipientId
         },
         "message":{
-            "text": `This is what you could do in ${city}`
+            "text": `Let me see what you could do in ${city}`
         }
     };
 
     callSendAPI(textMessage);
 
-    // now the proposals
-    const proposals = [
-        {
-            id: uuid.v4(),
-            title: "Do a Bungee Jump",
-            subtitle: "Experience the free fall",
-            image_url: "http://xtremecanadian.com/wp-content/uploads/2015/07/Bungee_Jumping_Whistler.jpg",
-            price: 35,
-            category: "Action",
-            city: city
-        },
-        {
-            id: uuid.v4(),
-            title: "Go to the Colplay concert",
-            subtitle: "See them live and experience",
-            image_url: "http://images.sk-static.com/images/media/profile_images/artists/197928/huge_avatar",
-            price: 60,
-            category: "Concert",
-            city: city
-        },
-        {
-            id: uuid.v4(),
-            title: "Drive a Lamborghini",
-            subtitle: "Feel the power of the bull",
-            image_url: "https://www.lamborghini.com/de-en/sites/de-en/files/DAM/lamborghini/share%20img/huracan-coupe-facebook-og.jpg",
-            price: 200,
-            category: "Action",
-            city: city
-        }
-    ];
+    /*fetch(`https://www.eventbriteapi.com/v3/events/search?token=${token}&location.address=${city}&categories=108,109,116`)
+        .then(res => res.json())
+        .then(result => {
+        const proposals = result.events.map((event) => {
+            const category = categories.find((c) => c)
+            return {
+                id: event.id,
+                category:
+            }
+        });*/
 
-    proposals.forEach((event) => {
-       proposalStore.add(event.id, event);
-    });
+        // now the proposals
+        const proposals = [
+            {
+                id: uuid.v4(),
+                title: "Do a Bungee Jump",
+                subtitle: "Experience the free fall",
+                image_url: "http://xtremecanadian.com/wp-content/uploads/2015/07/Bungee_Jumping_Whistler.jpg",
+                price: 35,
+                category: "Action",
+                city: city
+            },
+            {
+                id: uuid.v4(),
+                title: "Go to the Colplay concert",
+                subtitle: "See them live and experience",
+                image_url: "http://images.sk-static.com/images/media/profile_images/artists/197928/huge_avatar",
+                price: 60,
+                category: "Concert",
+                city: city
+            },
+            {
+                id: uuid.v4(),
+                title: "Drive a Lamborghini",
+                subtitle: "Feel the power of the bull",
+                image_url: "https://www.lamborghini.com/de-en/sites/de-en/files/DAM/lamborghini/share%20img/huracan-coupe-facebook-og.jpg",
+                price: 200,
+                category: "Action",
+                city: city
+            }
+        ];
 
-    const elements = proposals.map((event) => {
-        const eventData = {
-            title: event.title,
-            subtitle: `${event.subtitle} for ${event.price}€`,
-            image_url: event.image_url
-        };
-        return Object.assign({}, eventData,  {
-            buttons: [{
-                type: "postback",
-                title: "Let's do this!",
-                payload: `activity ${event.id}`,
-            }]
+        proposals.forEach((event) => {
+            proposalStore.add(event.id, event);
         });
-    });
+
+        const elements = proposals.map((event) => {
+            const eventData = {
+                title: event.title,
+                subtitle: `${event.subtitle} for ${event.price}€`,
+                image_url: event.image_url
+            };
+            return Object.assign({}, eventData,  {
+                buttons: [{
+                    type: "postback",
+                    title: "Let's do this!",
+                    payload: `activity ${event.id}`,
+                }]
+            });
+        });
 
 
-    const messageData = {
-        recipient: {
-            id: recipientId
-        },
-        message: {
-            attachment: {
-                type: "template",
-                payload: {
-                    template_type: "generic",
-                    elements: elements
+        const messageData = {
+            recipient: {
+                id: recipientId
+            },
+            message: {
+                attachment: {
+                    type: "template",
+                    payload: {
+                        template_type: "generic",
+                        elements: elements
+                    }
                 }
             }
-        }
-    };
+        };
 
-    callSendAPI(messageData);
+        callSendAPI(messageData);
+    //});
 };
 
 const sendCityProposal = (recipientId) => {
