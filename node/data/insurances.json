@@ -1,0 +1,27 @@
+[
+  {
+    "id": 0,
+    "title": "Action Plus",
+    "price": 15,
+    "duration": 1,
+    "details": "Neck breaker and other things"
+  }, {
+    "id": 1,
+    "title": "Camera Weekend",
+    "duration": 2,
+    "price": 15.90,
+    "details": "If your camera falls down you get it repaired"
+  }, {
+    "id": 2,
+    "title": "Phone Short",
+    "duration": 1,
+    "price": 9.99,
+    "details": "If your phone falls down or is stolen you get it replaced"
+  }, {
+    "id": 3,
+    "title": "Vacation",
+    "duration": 6,
+    "price": 60,
+    "details": "Hospitals etc. all covered"
+  }
+]
